@@ -51,9 +51,12 @@ def load_pivot_data():
     
 @app.route('/')
 def home():    
-    return 'Recommender'
+    return 'Recommender System'
 
-@app.route('/predict/<string:isbn>')
+def get_books_ratings():
+    
+
+@app.route('/recommender/<string:isbn>')
 def predict(isbn):
     
     global books_pivot
@@ -70,7 +73,7 @@ def predict(isbn):
         books_arr = books_pivot.index[s[i]]
 
     # Get Livros apartir do ISBN
-    books_list = books[books['ISBN'].isin(books_arr)]
+    books_list = books[books['ISBN'].isin(books_arr)].drop_duplicates(['ISBN'])
     books_resp = []
     for i, r in books_list.iterrows():
         b = {
@@ -83,7 +86,6 @@ def predict(isbn):
         books_resp.append(b)
         
     return jsonify(books_resp)
-
 
 if __name__ == '__main__':
     load_books()
