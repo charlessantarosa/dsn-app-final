@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  ws-recommender-prod:
     runs-on: ubuntu-latest
     steps:      
       - uses: actions/checkout@v2
@@ -17,12 +17,12 @@ jobs:
           registry: registry.gitlab.com
           username: ${{ secrets.GITLAB_USERNAME }}
           password: ${{ secrets.GITLAB_TOKEN }}
-
-      - name: Build, tag, and push image to Gitlab.com
-        id: build-image
         env:
           IMAGE_REGISTRY: registry.gitlab.com/charles.santarosa.br/miscelaneos/uea-recommender          
           IMAGE_TAG: ${{ github.sha }}
+        
+      - name: Build, tag, and push image to Gitlab.com
+        id: build-image        
         run: |
           docker build -t $IMAGE_REGISTRY:$IMAGE_TAG .
           docker push $IMAGE_REGISTRY:$IMAGE_TAG
