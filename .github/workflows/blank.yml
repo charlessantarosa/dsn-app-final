@@ -25,6 +25,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Login Registry Gitlab.com
+        id: login-gitlab
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.GITLAB_USERNAME }}
+          password: ${{ secrets.GITLAB_TOKEN }}
+
       - name: Build, tag, and push image to Gitlab.com
         id: build-image
         env:
