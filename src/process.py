@@ -4,13 +4,24 @@ from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 import pickle
 import os
+import gdown
+from zipfile import ZipFile
 
 DIR_ROOT = os.getcwd()
-DB_BOOK_RATINGS = DIR_ROOT + '/src/data/db-book-ratings.csv'
-DB_BOOKS = DIR_ROOT + '/src/data/db-books.csv'
-DB_USERS = DIR_ROOT + '/src/data/db-users.csv'
+DB_BOOK_RATINGS = DIR_ROOT + '/db-book-ratings.csv'
+DB_BOOKS = DIR_ROOT + '/db-books.csv'
+DB_USERS = DIR_ROOT + '/db-users.csv'
 DB_FINAL_RATINGS = DIR_ROOT + '/db-final-ratings.csv'
 MODEL_FILENAME = DIR_ROOT + '/model.pkl'
+URL_DB_DOWNLOAD = 'https://drive.google.com/uc?id=15ljwmuR_OD1RFssfl07PZwW-2KTLDdPT'
+
+# Download da fontes de dados do Google Driver
+output = DIR_ROOT + '/data.zip'
+gdown.download(URL_DB_DOWNLOAD, output, quiet=False)
+
+# Descompactando
+zip = ZipFile(output)
+zip.extractall()    
 
 # Databases
 books = pd.read_csv(DB_BOOKS, sep=';', encoding="latin-1", error_bad_lines= False)
@@ -25,8 +36,8 @@ ratings.rename(columns = {'User-ID':'user_id', 'Book-Rating':'rating'}, inplace=
 
 ## Decisoes de Dominio ---------------------------------------------------------------------------------------------------
 
-# Livros que tenham mais de 150 avaliações pelos usuários
-books_eval = 150 
+# Livros que tenham mais de 100 avaliações pelos usuários
+books_eval = 100 
 x = ratings['user_id'].value_counts() > books_eval
 
 y = x[x].index  
@@ -49,7 +60,7 @@ number_rating.rename(columns= {'rating':'number_of_ratings'}, inplace=True)
 final_rating = rating_with_books.merge(number_rating, on='title')
 
 # Filtrar somente livros que tenham pelo menos 50 avaliações
-final_rating = final_rating[final_rating['number_of_ratings'] >= 50]
+final_rating = final_rating[final_rating['number_of_ratings'] >= 100]
 
 # Tratando dados duplicados
 final_rating.drop_duplicates(['user_id','title'], inplace=True)

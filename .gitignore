@@ -6,6 +6,10 @@ src/**/*.csv
 *.pkl
 src/**/*.pkl
 
+# zip
+*.zip
+src/**/*.zip
+
 # vscode
 .vscode
 

@@ -9,6 +9,7 @@ DIR_ROOT = os.getcwd()
 MODEL_FILENAME = DIR_ROOT + '/model.pkl'
 DB_FINAL_RATINGS = DIR_ROOT + '/db-final-ratings.csv'
 DB_BOOKS = DIR_ROOT + '/db-books.csv'
+
 books_pivot = ''
 books = ''
 
