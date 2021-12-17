@@ -1,44 +1,37 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
-#   pull_request:
-#     branches: [ master ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  IMAGE_REGISTRY: charlessantarosa/ws-recommender
+  IMAGE_TAG: ${{ github.sha }}
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  ws-recommender-prod:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    steps:      
       - uses: actions/checkout@v2
-
-      - name: Login Registry Gitlab.com
+      - name: Login Registry DockerHub
         id: login-gitlab
-        uses: docker/login-action@v1
-        with:
-          registry: registry.gitlab.com
-          username: ${{ secrets.GITLAB_USERNAME }}
-          password: ${{ secrets.GITLAB_TOKEN }}
-
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:          
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}        
+        
       - name: Build, tag, and push image to Gitlab.com
-        id: build-image
-        env:
-          IMAGE_REGISTRY: registry.gitlab.com/charles.santarosa.br/miscelaneos/uea-recommender          
-          IMAGE_TAG: ${{ github.sha }}
+        id: build-image        
         run: |
           docker build -t $IMAGE_REGISTRY:$IMAGE_TAG .
           docker push $IMAGE_REGISTRY:$IMAGE_TAG
           echo "::set-output name=image::$IMAGE_REGISTRY:$IMAGE_TAG"
+
+      - name: Deploy container to VM/AWS
+        uses: ironhalik/docker-over-ssh-action@v1
+        with:
+          user: ubuntu
+          host: ec2-3-12-154-140.us-east-2.compute.amazonaws.com
+          key: ${{ secrets.SSH_PRIVATE_KEY }}          
+          script: |
+            docker rm -f recommender | true
+            docker run --privileged -p 80:3000 --name recommender --restart unless-stopped -d $IMAGE_REGISTRY:$IMAGE_TAG
+            echo "Deploy Recommender System [ OK ]"
