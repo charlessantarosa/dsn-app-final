@@ -33,6 +33,6 @@ jobs:
           host: ec2-3-12-154-140.us-east-2.compute.amazonaws.com
           key: ${{ secrets.SSH_PRIVATE_KEY }}          
           script: |
-            docker rm -f recommender || true
-            docker run -d -p 80:3000 --name recommender $IMAGE_REGISTRY:$IMAGE_TAG
+            docker rm -f recommender | true
+            docker run -p 80:3000 --name recommender --restart unless-stopped -d $IMAGE_REGISTRY:$IMAGE_TAG
             echo "Deploy Recommender System [ OK ]"
