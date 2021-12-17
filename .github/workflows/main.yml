@@ -22,4 +22,4 @@ jobs:
       - name: Build, tag, and push image to Gitlab.com
         id: build-image        
         run: |
-          echo $USER
+          echo "USER=$USER"
