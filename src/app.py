@@ -53,9 +53,6 @@ def load_pivot_data():
 def home():    
     return 'Recommender System'
 
-def get_books_ratings():
-    
-
 @app.route('/recommender/<string:isbn>')
 def predict(isbn):
     
@@ -91,5 +88,3 @@ if __name__ == '__main__':
     load_books()
     load_pivot_data()    
     app.run(debug=True, port=3000, host="0.0.0.0")
-
-# Fim
