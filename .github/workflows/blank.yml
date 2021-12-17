@@ -42,3 +42,18 @@ jobs:
           docker build -t $IMAGE_REGISTRY:$IMAGE_TAG .
           docker push $IMAGE_REGISTRY:$IMAGE_TAG
           echo "::set-output name=image::$IMAGE_REGISTRY:$IMAGE_TAG"
+          
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: running docker info
+        uses: ironhalik/docker-over-ssh-action@v1
+        with:
+          user: ec2-user
+          host: ec2-3-144-232-113.us-east-2.compute.amazonaws.com
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          # port: 1022 # Defaults to 22
+          script: |
+            docker run -d -p 80:80 nginx
+            echo "Deploy AWS ... NGINX"
+
