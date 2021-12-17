@@ -1,10 +1,11 @@
 name: CI
-on:  
-
+on:
   push:
     branches: [ master ]
   workflow_dispatch:
-
+env:
+  IMAGE_REGISTRY: registry.gitlab.com/charles.santarosa.br/miscelaneos/uea-recommender          
+  IMAGE_TAG: ${{ github.sha }}
 jobs:
   ws-recommender-prod:
     runs-on: ubuntu-latest
@@ -16,10 +17,7 @@ jobs:
         with:
           registry: registry.gitlab.com
           username: ${{ secrets.GITLAB_USERNAME }}
-          password: ${{ secrets.GITLAB_TOKEN }}
-        env:
-          IMAGE_REGISTRY: registry.gitlab.com/charles.santarosa.br/miscelaneos/uea-recommender          
-          IMAGE_TAG: ${{ github.sha }}
+          password: ${{ secrets.GITLAB_TOKEN }}        
         
       - name: Build, tag, and push image to Gitlab.com
         id: build-image        
@@ -35,5 +33,6 @@ jobs:
           host: ec2-3-12-154-140.us-east-2.compute.amazonaws.com
           key: ${{ secrets.SSH_PRIVATE_KEY }}          
           script: |
-            docker run -d -p 80:3000 $IMAGE_REGISTRY:$IMAGE_TAG
+            docker rm -f --name recommender
+            docker run -d -p 80:3000 --name recommender $IMAGE_REGISTRY:$IMAGE_TAG
             echo "Deploy Recommender System [ OK ]"
