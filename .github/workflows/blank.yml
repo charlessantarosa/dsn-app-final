@@ -34,5 +34,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}          
           script: |
             docker rm -f recommender | true
-            docker run -p 80:3000 --name recommender --restart unless-stopped -d $IMAGE_REGISTRY:$IMAGE_TAG
+            docker run --privileged -p 80:3000 --name recommender --restart unless-stopped -d $IMAGE_REGISTRY:$IMAGE_TAG
             echo "Deploy Recommender System [ OK ]"
