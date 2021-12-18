@@ -51,7 +51,7 @@ def load_pivot_data():
     
 @app.route('/')
 def home():    
-    return 'Recommender System UEA'
+    return 'Recommender System: version 1.0.0'
 
 @app.route('/recommender/<string:isbn>')
 def predict(isbn):
